@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Альфа Кальк">
+    <title>Альфа Калькулятор</title>
+    <style>
+        :root {
+            --alfa-red: rgb(239, 49, 36);
+            --alfa-red-hover: rgb(217, 42, 30);
+            --bg-color: rgb(244, 245, 247);
+            --text-color: rgb(51, 51, 51);
+            --card-bg: rgb(255, 255, 255);
+            --border-color: rgb(225, 227, 230);
+        }
+
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        header {
+            background-color: var(--alfa-red);
+            color: white;
+            padding: 16px 0;
+            padding-top: calc(12px + env(safe-area-inset-top, 0px));
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 12px 12px 40px 12px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-top: 12px;
+            margin-bottom: 4px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .row-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+        }
+
+        .row-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-name {
+            font-weight: 500;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .price-tag {
+            display: inline-block;
+            color: rgb(102, 102, 102);
+            font-size: 11px;
+            background: rgb(240, 240, 240);
+            padding: 2px 6px;
+            border-radius: 5px;
+            margin-top: 3px;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .control-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .control-label {
+            font-size: 9px;
+            color: rgb(136, 136, 136);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .counter-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .counter-btn {
+            background-color: rgb(244, 245, 247);
+            border: 1px solid rgb(209, 212, 215);
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+            touch-action: manipulation;
+        }
+
+        .counter-btn:active {
+            background-color: var(--alfa-red);
+            color: white;
+            border-color: var(--alfa-red);
+        }
+
+        input[type="number"] {
+            width: 42px;
+            padding: 7px 0;
+            text-align: center;
+            border: 1px solid rgb(209, 212, 215);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            background-color: white;
+            color: var(--text-color);
+        }
+
+        .total-section {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        .total-sum {
+            color: var(--alfa-red);
+            font-size: 26px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background-color: var(--alfa-red);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+
+        .btn-secondary {
+            background-color: rgb(51, 51, 51);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+
+        .btn-danger {
+            background-color: rgb(240, 240, 240);
+            color: rgb(255, 77, 79);
+            border: 1px solid rgb(255, 204, 199);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 12px;
+            -webkit-appearance: none;
+        }
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            background-color: rgb(250, 250, 250);
+            outline: none;
+            color: var(--text-color);
+            -webkit-appearance: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            height: 85vh;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 { margin: 0; font-size: 18px; }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: rgb(136, 136, 136);
+            padding: 4px;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-body h3 {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: rgb(119, 119, 119);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgb(238, 238, 238);
+            padding-bottom: 5px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgb(240, 240, 240);
+        }
+
+        .setting-name-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            min-width: 0;
+            background-color: white;
+            color: var(--text-color);
+            -webkit-appearance: none;
+        }
+
+        .setting-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .setting-price-input {
+            width: 60px !important;
+            padding: 8px 4px !important;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px !important;
+            background-color: white;
+            color: var(--text-color);
+            -webkit-appearance: none;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: rgb(255, 77, 79);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 0 4px 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-row-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .add-row-wrapper input[type="text"],
+        .add-row-wrapper input[type="number"] {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: white;
+            color: var(--text-color);
+            -webkit-appearance: none;
+            box-sizing: border-box;
+        }
+
+        .add-row-wrapper input[type="text"] { flex: 1; }
+        .add-row-wrapper input[type="number"] { width: 75px; text-align: center; }
+
+        .add-btn {
+            background-color: rgb(51, 51, 51);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            -webkit-appearance: none;
+        }
+
+        .modal-footer {
+            padding: 12px 16px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            border-top: 1px solid var(--border-color);
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <h1>Альфа Калькулятор</h1>
+            <button class="settings-btn" id="open-settings-btn" type="button">⚙️</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card"><h2>Продукты</h2><div id="products-body"></div></div>
+        <div class="card"><h2>Статусы встреч</h2><div id="status-body"></div></div>
+        <div class="card"><h2>Кросс - продажи</h2><div id="cross-body"></div></div>
+        <div class="card"><h2>Установка приложения</h2><div id="apps-body"></div></div>
+        <div class="total-section">Итого заработано: <span class="total-sum" id="total-money">0 ₽</span></div>
+        <div class="card"><h2>Итоговый отчет</h2><textarea id="report-output" readonly></textarea><button class="btn-secondary" id="btn-copy">Скопировать</button></div>
+        <button class="btn-danger" id="btn-clear-all" type="button">Очистить все счётчики за день</button>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Настройки списков и цен</h2><button class="close-modal-btn" id="close-settings-btn" type="button">✕</button></div>
+            <div class="modal-body">
+                <h3>Основные продукты</h3> <div id="settings-main-list"></div>
+                <div class="add-row-wrapper"><input type="text" id="add-main-name" placeholder="Название"><input type="number" id="add-main-price" placeholder="Цена"><button class="add-btn" type="button" onclick="addItem('main')">Добавить</button></div>
+                <h3>Статусы встреч</h3> <div id="settings-status-list"></div>
+                <div class="add-row-wrapper"><input type="text" id="add-status-name" placeholder="Новый статус"><button class="add-btn" type="button" onclick="addItem('status')">Добавить</button></div>
+                <h3>Кросс-продажи</h3> <div id="settings-cross-list"></div>
+                <div class="add-row-wrapper"><input type="text" id="add-cross-name" placeholder="Название"><input type="number" id="add-cross-price" placeholder="Цена"><button class="add-btn" type="button" onclick="addItem('cross')">Добавить</button></div>
+                <h3>Установка приложения</h3> <div id="settings-app-list"></div>
+                <div class="add-row-wrapper"><input type="text" id="add-app-name" placeholder="Название"><button class="add-btn" type="button" onclick="addItem('app')">Добавить</button></div>
+            </div>
+            <div class="modal-footer"><button class="btn-primary" id="save-settings-btn" type="button">Сохранить и закрыть</button></div>
+        </div>
+    </div>
+
+    <script>
+        // АВТОНОМНЫЙ СКРИПТ (SERVICE WORKER) ДЛЯ РАБОТЫ 100% ОФЛАЙН ПРИ ЗАПУСКЕ ПО ССЫЛКЕ
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const b64 = 'data:text/javascript;base64,' + btoa(`
+                    const cacheName = 'alfa-calc-v1';
+                    self.addEventListener('install', e => { e.waitUntil(caches.open(cacheName).then(c => c.addAll([location.href]))); });
+                    self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+                `);
+                navigator.serviceWorker.register(b64).catch(() => {});
+            });
+        }
+
+        function safeGet(key, defaultVal) { try { const val = localStorage.getItem(key); return val ? JSON.parse(val) : defaultVal; } catch(e) { return defaultVal; } }
+        function safeSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+        function safeRemove(key) { try { localStorage.removeItem(key); } catch(e) {} }
+
+        const defaultMain = [
+            { id: "dk", name: "ДК", price: 310 }, { id: "apelsinki", name: "Апельсинки", price: 310 },
+            { id: "kk", name: "КК", price: 570 }, { id: "family", name: "Семейный", price: 270 },
+            { id: "zpk", name: "Зпк", price: 310 }, { id: "re", name: "Re", price: 310 },
+            { id: "kids", name: "Детская", price: 470 }, { id: "te", name: "ТЭ", price: 590 }, { id: "mp", name: "Мп", price: 310 }
+        ];
+        const defaultStatus = [
+            { id: "status_ndz", name: "Ндз" }, { id: "status_postpone", name: "Перенос встречи" },
+            { id: "status_bank_reject_911", name: "Отказ банка/911" }, { id: "status_bank_reject_before", name: "Отказ банка до встречи" },
+            { id: "status_client_reject_before", name: "Отказ клиента до встречи" }, { id: "status_client_reject_at", name: "Отказ клиента на встрече" },
+            { id: "status_cancel", name: "Отмена встречи" }, { id: "status_duplicate", name: "Дубль" }
+        ];
+        const defaultCross = [
+            { id: "cross_kk", name: "Кросс КК", price: 570 }, { id: "cross_dk", name: "Кросс ДК", price: 310 },
+            { id: "cross_sticker", name: "Кросс стикер", price: 310 }, { id: "cross_kids", name: "Кросс кидс", price: 470 },
+            { id: "cross_qr", name: "Кросс Апельсин по QR", price: 310 }, { id: "selfie_kk", name: "Сэлфи КК", price: 570 },
+            { id: "selfie_dk", name: "Сэлфи ДК", price: 310 }, { id: "cp", name: "ЦП", price: 20 },
+            { id: "smart", name: "Смарт", price: 30 }, { id: "pension", name: "Пенсия", price: 270 },
+            { id: "bs", name: "БС сделка/пополнение", price: 100 }, { id: "insurance", name: "Коробочное страхование", price: 100 }, { id: "ns", name: "НС/ НС Миллионер", price: 0 }
+        ];
+        const defaultApp = [{ id: "app_android", name: "Андроид" }, { id: "app_ios", name: "iOS" }, { id: "app_x5", name: "X5 (пятерочка)" }];
+
+        let mainProducts = safeGet('alfa_calc_main', defaultMain);
+        let statusProducts = safeGet('alfa_calc_status', defaultStatus);
+        let crossProducts = safeGet('alfa_calc_cross', defaultCross);
+        let appProducts = safeGet('alfa_calc_app', defaultApp);
+        let dailyCounts = safeGet('alfa_calc_daily_counts', {});
+
+        function saveStructureToLS() { safeSet('alfa_calc_main', mainProducts); safeSet('alfa_calc_status', statusProducts); safeSet('alfa_calc_cross', crossProducts); safeSet('alfa_calc_app', appProducts); }
+        function saveCountsToLS() { document.querySelectorAll('.calc-input').forEach(inp => { dailyCounts[inp.id] = parseInt(inp.value) || 0; }); safeSet('alfa_calc_daily_counts', dailyCounts); }
+
+        const productsBody = document.getElementById('products-body'), statusBody = document.getElementById('status-body'), crossBody = document.getElementById('cross-body'), appsBody = document.getElementById('apps-body'), totalMoneyElement = document.getElementById('total-money'), reportOutput = document.getElementById('report-output'), settingsModal = document.getElementById('settings-modal');
+
+        function renderAll() {
+            productsBody.innerHTML = ''; statusBody.innerHTML = ''; crossBody.innerHTML = ''; appsBody.innerHTML = '';
+            mainProducts.forEach(product => {
+                const div = document.createElement('div'); div.className = 'row-item'; const idApp = `main-app-${product.id}`, idIss = `main-iss-${product.id}`;
+                div.innerHTML = `<div class="product-info"><div class="product-name">${product.name}</div><div class="price-tag">${product.price} ₽</div></div><div class="controls-wrapper"><div class="control-block"><span class="control-label">Назн.</span><div class="counter-group"><button class="counter-btn minus-btn" type="button">−</button><input type="number" min="0" value="${dailyCounts[idApp]||0}" class="calc-input appointed-input" id="${idApp}" data-id="${product.id}"><button class="counter-btn plus-btn" type="button">+</button></div></div><div class="control-block"><span class="control-label">Выд.</span><div class="counter-group"><button class="counter-btn minus-btn" type="button">−</button><input type="number" min="0" value="${dailyCounts[idIss]||0}" class="calc-input main-issued-input" id="${idIss}" data-id="${product.id}" data-price="${product.price}"><button class="counter-btn plus-btn" type="button">+</button></div></div></div>`;
+                productsBody.appendChild(div);
+            });
+            statusProducts.forEach(status => {
+                const div = document.createElement('div'); div.className = 'row-item'; const idInp = `status-inp-${status.id}`;
+                div.innerHTML = `<div class="product-info"><div class="product-name">${status.name}</div></div><div class="counter-group"><button class="counter-btn minus-btn" type="button">−</button><input type="number" min="0" value="${dailyCounts[idInp]||0}" class="calc-input status-input" id="${idInp}" data-id="${status.id}"><button class="counter-btn plus-btn" type="button">+</button></div>`;
+                statusBody.appendChild(div);
+            });
+            crossProducts.forEach(product => {
+                const div = document.createElement('div'); div.className = 'row-item'; const idIss = `cross-iss-${product.id}`;
+                div.innerHTML = `<div class="product-info"><div class="product-name">${product.name}</div><div class="price-tag">${product.price} ₽</div></div><div class="counter-group"><button class="counter-btn minus-btn" type="button">−</button><input type="number" min="0" value="${dailyCounts[idIss]||0}" class="calc-input cross-issued-input" id="${idIss}" data-id="${product.id}" data-price="${product.price}"><button class="counter-btn plus-btn" type="button">+</button></div>`;
+                crossBody.appendChild(div);
+            });
+            appProducts.forEach(app => {
+                const div = document.createElement('div'); div.className = 'row-item'; const idInp = `app-inp-${app.id}`;
+                div.innerHTML = `<div class="product-info"><div class="product-name">${app.name}</div></div><div class="counter-group"><button class="counter-btn minus-btn" type="button">−</button><input type="number" min="0" value="${dailyCounts[idInp]||0}" class="calc-input app-input" id="${idInp}" data-id="${app.id}"><button class="counter-btn plus-btn" type="button">+</button></div>`;
+                appsBody.appendChild(div);
+            });
+            updateTotalsAndReport();
+        }
+
+        function setupListeners(container) {
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('plus-btn') || e.target.classList.contains('minus-btn')) {
+                    const input = e.target.parentElement.querySelector('input'); let currentValue = parseInt(input.value) || 0;
+                    if (e.target.classList.contains('plus-btn')) currentValue++; else if (e.target.classList.contains('minus-btn') && currentValue > 0) currentValue--;
+                    input.value = currentValue; saveCountsToLS(); updateTotalsAndReport();
+                }
+            });
+            container.addEventListener('input', function(e) { if (e.target.tagName === 'INPUT') { saveCountsToLS(); updateTotalsAndReport(); } });
+        }
+
+        function updateTotalsAndReport() {
+            let total = 0; const state = { mainApp: {}, mainIss: {}, stat: {}, cross: {}, app: {} };
+            document.querySelectorAll('.main-issued-input').forEach(inp => { const count = parseInt(inp.value) || 0; total += count * (parseInt(inp.getAttribute('data-price')) || 0); state.mainIss[inp.getAttribute('data-id')] = count; });
+            document.querySelectorAll('.appointed-input').forEach(inp => { state.mainApp[inp.getAttribute('data-id')] = parseInt(inp.value) || 0; });
+            document.querySelectorAll('.cross-issued-input').forEach(inp => { const count = parseInt(inp.value) || 0; total += count * (parseInt(inp.getAttribute('data-price')) || 0); state.cross[inp.getAttribute('data-id')] = count; });
+            document.querySelectorAll('.status-input').forEach(inp => state.stat[inp.getAttribute('data-id')] = parseInt(inp.value) || 0);
+            document.querySelectorAll('.app-input').forEach(inp => state.app[inp.getAttribute('data-id')] = parseInt(inp.value) || 0);
+
+            totalMoneyElement.textContent = total.toLocaleString('ru-RU') + ' ₽';
+
+            let text = "Итоговый отчет \n\nПродукты\n";
+            mainProducts.forEach(p => {
+                let rName = p.name;
+                if ((p.id === 'dk' || p.id === 'apelsinki' || p.id === 'kk') && !rName.includes('назначено/выдано')) rName += ' назначено/выдано';
+                if (p.id === 'te' && rName === 'ТЭ') rName = 'ТЭ: демонтаж';
+                text += `${rName}: ${state.mainApp[p.id] || 0}/${state.mainIss[p.id] || 0}\n`;
+            });
+            text += "\nСтатусы встреч\n"; statusProducts.forEach(s => text += `${s.name}: ${state.stat[s.id] || 0}\n`);
+            text += "\nКросс-продажи\n"; crossProducts.forEach(c => text += `${c.name}: ${state.cross[c.id] || 0}\n`);
+            text += "\nУстановка приложения\n"; appProducts.forEach(a => text += `${a.name}: ${state.app[a.id] || 0}\n`);
+            reportOutput.value = text;
+        }
+
+        document.getElementById('btn-clear-all').addEventListener('click', function() { if (confirm("Вы уверены, что хотите обнулить все количества за день?")) { dailyCounts = {}; safeRemove('alfa_calc_daily_counts'); renderAll(); } });
+        document.getElementById('btn-copy').addEventListener('click', function() { navigator.clipboard.writeText(reportOutput.value).then(() => { const btn = this, o = btn.textContent; btn.textContent = "Скопировано! ✓"; btn.style.backgroundColor = "rgb(76, 175, 80)"; setTimeout(() => { btn.textContent = o; btn.style.backgroundColor = ""; }, 2000); }); });
+
+        function openSettings() {
+            const drawList = (listId, arr, type, hasPrice) => {
+                const container = document.getElementById(listId); container.innerHTML = '';
+                arr.forEach(item => {
+                    let priceHtml = hasPrice ? `<input type="number" min="0" value="${item.price}" class="setting-price-input" id="set-price-${type}-${item.id}"><span>₽</span>` : '';
+                    container.innerHTML += `<div class="setting-row" style="gap: 8px;"><input type="text" value="${item.name}" class="setting-name-input" id="set-name-${type}-${item.id}"><div class="setting-input-wrapper">${priceHtml}<button class="delete-btn" onclick="deleteItem('${type}', '${item.id}')">✕</button></div></div>`;
+                });
+            };
+            drawList('settings-main-list', mainProducts, 'main', true); drawList('settings-status-list', statusProducts, 'status', false); drawList('settings-cross-list', crossProducts, 'cross', true); drawList('settings-app-list', appProducts, 'app', false);
+            settingsModal.style.display = 'flex';
+        }
+
+        window.addItem = function(type) {
+            const id = type + '_' + Date.now();
+            if (type === 'main') {
+                const name = document.getElementById('add-main-name').value.trim(), price = parseInt(document.getElementById('add-main-price').value) || 0;
+                if(name) { mainProducts.push({ id, name, price }); document.getElementById('add-main-name').value = ''; document.getElementById('add-main-price').value = ''; }
+            } else if (type === 'status') {
+                const name = document.getElementById('add-status-name').value.trim(); if(name) { statusProducts.push({ id, name }); document.getElementById('add-status-name').value = ''; }
+            } else if (type === 'cross') {
+                const name = document.getElementById('add-cross-name').value.trim(), price = parseInt(document.getElementById('add-cross-price').value) || 0;
+                if(name) { crossProducts.push({ id, name, price }); document.getElementById('add-cross-name').value = ''; document.getElementById('add-cross-price').value = ''; }
+            } else if (type === 'app') {
+                const name = document.getElementById('add-app-name').value.trim(); if(name) { appProducts.push({ id, name }); document.getElementById('add-app-name').value = ''; }
+            }
+            saveStructureToLS(); renderAll(); openSettings();
+        };
+
+        window.deleteItem = function(type, id) {
+            if(confirm('Удалить эту строку?')) {
+                if(type === 'main') mainProducts = mainProducts.filter(p => p.id !== id); if(type === 'status') statusProducts = statusProducts.filter(p => p.id !== id); if(type === 'cross') crossProducts = crossProducts.filter(p => p.id !== id); if(type === 'app') appProducts = appProducts.filter(p => p.id !== id);
+                saveStructureToLS(); renderAll(); openSettings();
+            }
+        };
+
+        document.getElementById('save-settings-btn').addEventListener('click', function() {
+            mainProducts.forEach(p => { const n = document.getElementById(`set-name-main-${p.id}`), pr = document.getElementById(`set-price-main-${p.id}`); if(n) p.name = n.value.trim(); if(pr) p.price = parseInt(pr.value) || 0; });
+            statusProducts.forEach(s => { const n = document.getElementById(`set-name-status-${s.id}`); if(n) s.name = n.value.trim(); });
+            crossProducts.forEach(c => { const n = document.getElementById(`set-name-cross-${c.id}`), pr = document.getElementById(`set-price-cross-${c.id}`); if(n) c.name = n.value.trim(); if(pr) c.price = parseInt(pr.value) || 0; });
+            appProducts.forEach(a => { const n = document.getElementById(`set-name-app-${a.id}`); if(n) a.name = n.value.trim(); });
+
+            mainProducts = mainProducts.filter(p => p.name !== ""); statusProducts = statusProducts.filter(s => s.name !== ""); crossProducts = crossProducts.filter(c => c.name !== ""); appProducts = appProducts.filter(a => a.name !== "");
+            saveStructureToLS(); renderAll(); settingsModal.style.display = 'none';
+        });
+
+        document.getElementById('open-settings-btn').addEventListener('click', openSettings);
+        document.getElementById('close-settings-btn').addEventListener('click', () => settingsModal.style.display = 'none');
+
+        setupListeners(productsBody); setupListeners(statusBody); setupListeners(crossBody); setupListeners(appsBody);
+        renderAll();
+    </script>
+</body>
+</html>
