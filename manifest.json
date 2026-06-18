@@ -1,0 +1,8 @@
+{
+  "name": "Alfa Calc",
+  "short_name": "Alfa Calc",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ef3124",
+  "theme_color": "#ef3124"
+}
