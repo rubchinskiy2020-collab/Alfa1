@@ -7,6 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Альфа Кальк">
+    <link rel="apple-touch-icon" href="https://alfabank.servicecdn.ru/site-assets/favicons/apple-touch-icon.png">
+    
+    <link rel="manifest" href="manifest.json">
+    
     <title>Альфа Калькулятор</title>
     <style>
         :root {
@@ -479,15 +483,12 @@
     </div>
 
     <script>
-        // АВТОНОМНЫЙ СКРИПТ (SERVICE WORKER) ДЛЯ РАБОТЫ 100% ОФЛАЙН ПРИ ЗАПУСКЕ ПО ССЫЛКЕ
+        // ЧЕСТНАЯ И НАДЕЖНАЯ РЕГИСТРАЦИЯ СЕРВИС-ВОРКЕРА ДЛЯ IOS
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                const b64 = 'data:text/javascript;base64,' + btoa(`
-                    const cacheName = 'alfa-calc-v1';
-                    self.addEventListener('install', e => { e.waitUntil(caches.open(cacheName).then(c => c.addAll([location.href]))); });
-                    self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
-                `);
-                navigator.serviceWorker.register(b64).catch(() => {});
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Успешно закешировано:', reg.scope))
+                    .catch(err => console.log('Ошибка регистрации воркера:', err));
             });
         }
 
